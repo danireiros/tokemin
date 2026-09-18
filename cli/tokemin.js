@@ -32,7 +32,7 @@ const { flags, values, positional } = parseArgs(process.argv.slice(2));
 
 if (flags.has("help") || positional[0] === "help") {
   process.stdout.write(
-    "promptmin compress [--mode message|system|context|chat] [--aggressiveness soft|medium|hard|budget] [--budget 800] [--query text] [archivo]\n",
+    "tokemin compress [--mode message|system|context|chat] [--aggressiveness soft|medium|hard|budget] [--budget 800] [--query text] [archivo]\n",
   );
   process.exit(0);
 }

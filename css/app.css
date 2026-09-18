@@ -157,7 +157,7 @@
   min-height: 0;
   overflow: hidden;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
   gap: 10px;
   padding: 12px;
   border-radius: var(--radius);
@@ -411,13 +411,74 @@
   color: var(--text);
 }
 
+.savings {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+  max-height: 28vh;
+  padding: 10px 12px;
+  border-radius: 16px;
+}
+
+.savings-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.savings-title {
+  margin: 0;
+  font-size: 13px;
+}
+
+.savings-totals {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.savings-stat {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.savings-stat strong {
+  display: block;
+  color: var(--text);
+  font-family: var(--font-mono);
+}
+
+.savings-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 56px;
+}
+
+.chart-bar {
+  flex: 1;
+  min-width: 4px;
+  border-radius: 4px 4px 0 0;
+  background: linear-gradient(180deg, var(--accent-mid), var(--ok));
+}
+
 .history {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
+.savings .history {
+  overflow-y: auto;
+  max-height: 9vh;
+}
+
 .history-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   border: 1px solid var(--line);
   border-radius: 12px;
   padding: 8px 10px;
@@ -430,6 +491,30 @@
 
 .history-item:hover {
   border-color: var(--accent-mid);
+}
+
+.history-meta {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.history-bar {
+  height: 4px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ok) 22%, transparent);
+}
+
+.history-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--ok);
+  border-radius: inherit;
+}
+
+.history-empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
 }
 
 .legend {
@@ -563,6 +648,10 @@ input[type="range"]::-webkit-slider-thumb {
 
   .diff-view {
     max-height: 10vh;
+  }
+
+  .savings {
+    max-height: 22vh;
   }
 }
 

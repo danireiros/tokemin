@@ -9,7 +9,8 @@ import {
   setPreciseCounter,
 } from "../core/index.js";
 
-const HISTORY_KEY = "promptmin-history";
+const HISTORY_KEY = "tokemin-history";
+const LEGACY_HISTORY_KEY = "promptmin-history";
 const LEVELS = ["soft", "medium", "hard", "budget"];
 const LEVEL_LABELS = ["suave", "media", "agresiva", "presupuesto"];
 
@@ -25,6 +26,9 @@ const chkDense = document.getElementById("chkDense");
 const chkComments = document.getElementById("chkComments");
 const diffView = document.getElementById("diffView");
 const historyList = document.getElementById("historyList");
+const savingsChart = document.getElementById("savingsChart");
+const btnCopy = document.getElementById("btnCopy");
+const btnClearHistory = document.getElementById("btnClearHistory");
 
 let mode = "message";
 let timer = 0;
@@ -86,9 +90,39 @@ function scheduleRefresh() {
   timer = window.setTimeout(refresh, 80);
 }
 
+function normalizeItem(item) {
+  const tokensIn = Number(item?.tokensIn) || 0;
+  const tokensOut = Number(item?.tokensOut) || 0;
+  const saved =
+    item?.saved == null ? Math.max(0, tokensIn - tokensOut) : Math.max(0, Number(item.saved) || 0);
+  const pct = tokensIn ? Math.round((saved / tokensIn) * 100) : 0;
+  return {
+    mode: item?.mode ?? "message",
+    tokensIn,
+    tokensOut,
+    saved,
+    pct,
+    preview: item?.preview ?? "",
+    input: item?.input ?? "",
+    at: Number(item?.at) || 0,
+  };
+}
+
+function formatWhen(ts) {
+  if (!ts) return "";
+  const delta = Date.now() - ts;
+  if (delta < 60_000) return "ahora";
+  const minutes = Math.floor(delta / 60_000);
+  if (minutes < 60) return `hace ${minutes}m`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `hace ${hours}h`;
+  return new Date(ts).toLocaleDateString();
+}
+
 function loadHistory() {
   try {
-    return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+    const raw = JSON.parse(localStorage.getItem(HISTORY_KEY) || localStorage.getItem(LEGACY_HISTORY_KEY) || "[]");
+    return Array.isArray(raw) ? raw.map(normalizeItem) : [];
   } catch {
     return [];
   }
@@ -96,12 +130,59 @@ function loadHistory() {
 
 function renderHistory() {
   const items = loadHistory();
-  historyList.innerHTML = "";
+  const totalSaved = items.reduce((sum, item) => sum + item.saved, 0);
+  const withIn = items.filter((item) => item.tokensIn > 0);
+  const avg = withIn.length
+    ? Math.round(withIn.reduce((sum, item) => sum + item.pct, 0) / withIn.length)
+    : 0;
+
+  document.getElementById("histCount").textContent = String(items.length);
+  document.getElementById("histSaved").textContent = String(totalSaved);
+  document.getElementById("histAvg").textContent = `${avg}%`;
+
+  savingsChart.replaceChildren();
+  const chronological = [...items].reverse();
+  const maxSaved = chronological.reduce((max, item) => Math.max(max, item.saved), 0);
+  for (const item of chronological) {
+    const bar = document.createElement("span");
+    bar.className = "chart-bar";
+    const height = item.saved > 0 && maxSaved ? Math.max(6, (item.saved / maxSaved) * 100) : 0;
+    bar.style.height = `${height}%`;
+    bar.title = `−${item.saved} tokens · ${item.pct}%`;
+    savingsChart.append(bar);
+  }
+
+  historyList.replaceChildren();
+  if (!items.length) {
+    const empty = document.createElement("p");
+    empty.className = "history-empty";
+    empty.textContent = "Aún no hay recortes guardados. Copia o guarda uno.";
+    historyList.append(empty);
+    return;
+  }
+
   for (const item of items) {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "history-item";
-    button.textContent = `${item.mode} · ${item.tokensIn}→${item.tokensOut} · ${item.preview}`;
+
+    const preview = document.createElement("span");
+    preview.textContent = item.preview;
+
+    const meta = document.createElement("span");
+    meta.className = "history-meta";
+    const when = formatWhen(item.at);
+    meta.textContent = when
+      ? `−${item.saved} tokens · ${item.pct}% · ${item.mode} · ${when}`
+      : `−${item.saved} tokens · ${item.pct}% · ${item.mode}`;
+
+    const bar = document.createElement("div");
+    bar.className = "history-bar";
+    const fill = document.createElement("span");
+    fill.style.width = `${Math.max(0, Math.min(100, item.pct))}%`;
+    bar.append(fill);
+
+    button.append(preview, meta, bar);
     button.addEventListener("click", () => {
       inputText.value = item.input;
       refresh();
@@ -114,16 +195,19 @@ function saveHistory() {
   if (!inputText.value.trim()) return;
   const result = compress(inputText.value, options());
   const preview = (inputText.value.trim().slice(0, 72) || "vacío").replace(/\s+/g, " ");
+  const saved = Math.max(0, result.saved ?? result.tokensIn - result.tokensOut);
   const next = [
-    {
+    normalizeItem({
       mode: result.mode,
       tokensIn: result.tokensIn,
       tokensOut: result.tokensOut,
+      saved,
       preview,
       input: inputText.value.slice(0, 20_000),
-    },
+      at: Date.now(),
+    }),
     ...loadHistory(),
-  ].slice(0, 12);
+  ].slice(0, 24);
   localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
   renderHistory();
 }
@@ -184,15 +268,25 @@ outputText.addEventListener("input", () => {
   document.getElementById("tokensOut").textContent = String(countTokens(outputText.value));
 });
 
-document.getElementById("btnCopy").addEventListener("click", async () => {
-  await navigator.clipboard.writeText(outputText.value);
-  document.getElementById("btnCopy").textContent = "Copiado";
+btnCopy.addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText(outputText.value);
+  } catch {
+    return;
+  }
+  saveHistory();
+  btnCopy.textContent = "Copiado";
   window.setTimeout(() => {
-    document.getElementById("btnCopy").textContent = "Copiar";
+    btnCopy.textContent = "Copiar";
   }, 1200);
 });
 
 document.getElementById("btnSave").addEventListener("click", saveHistory);
+
+btnClearHistory.addEventListener("click", () => {
+  localStorage.removeItem(HISTORY_KEY);
+  renderHistory();
+});
 
 loadTokenizer();
 refresh();

@@ -1,4 +1,4 @@
-# Promptmin
+# Tokemin
 
 Comprime prompts y contextos para gastar menos tokens. Todo corre en tu máquina: no hay servidor, no hay claves y el texto no sale del dispositivo.
 
@@ -10,8 +10,8 @@ Cursor **no** recorta solo cada mensaje que escribes. El ahorro aparece cuando l
 - Cursor (para el MCP)
 
 ```bash
-git clone https://github.com/danireiros/promptmin.git
-cd promptmin
+git clone https://github.com/danireiros/tokemin.git
+cd tokemin
 npm install
 ```
 
@@ -22,15 +22,15 @@ Añade el servidor en la config de MCP de **usuario** (`~/.cursor/mcp.json` en m
 ```json
 {
   "mcpServers": {
-    "promptmin": {
+    "tokemin": {
       "command": "node",
-      "args": ["/ruta/absoluta/a/promptmin/mcp/server.js"]
+      "args": ["/ruta/absoluta/a/tokemin/mcp/server.js"]
     }
   }
 }
 ```
 
-Si ya tienes otros servidores, pega solo el bloque `"promptmin": { ... }` junto a ellos. Sin `env` ni tokens.
+Si ya tienes otros servidores, pega solo el bloque `"tokemin": { ... }` junto a ellos. Sin `env` ni tokens.
 
 Reinicia Cursor o recarga los MCP. En el chat deberían aparecer las tools:
 
@@ -43,7 +43,7 @@ La ruta tiene que ser absoluta. Un `.cursor/mcp.json` del repo con ruta relativa
 
 Pega esto en una user rule o en las reglas del proyecto:
 
-> Si vas a reenviar a un `Task`, subagente o al modelo un contexto de más de ~800 tokens (docs, logs, dumps, historial), llama antes a Promptmin (`compress` o `compress_context`) y usa el texto recortado. No comprimas mensajes cortos: el ahorro es residual.
+> Si vas a reenviar a un `Task`, subagente o al modelo un contexto de más de ~800 tokens (docs, logs, dumps, historial), llama antes a Tokemin (`compress` o `compress_context`) y usa el texto recortado. No comprimas mensajes cortos: el ahorro es residual.
 
 ## CLI
 

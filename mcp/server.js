@@ -79,7 +79,7 @@ function handle(message) {
     reply(id, {
       protocolVersion: PROTOCOL,
       capabilities: { tools: {} },
-      serverInfo: { name: "promptmin", version: "0.1.0" },
+      serverInfo: { name: "tokemin", version: "0.1.0" },
     });
     return;
   }

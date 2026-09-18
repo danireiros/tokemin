@@ -1,12 +1,12 @@
 {
-  "name": "promptmin",
+  "name": "tokemin",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "description": "Comprime prompts para gastar menos tokens. Motor JS local: web, CLI y MCP para Cursor.",
   "scripts": {
     "test": "node --test test/*.test.js",
-    "cli": "node cli/promptmin.js",
+    "cli": "node cli/tokemin.js",
     "mcp": "node mcp/server.js"
   },
   "dependencies": {

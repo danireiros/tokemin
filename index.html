@@ -3,24 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Promptmin — comprime prompts, no gastes tokens</title>
+  <title>Tokemin — comprime prompts, no gastes tokens</title>
   <meta name="description" content="Pega un prompt o un contexto largo y recórtalo por capas: muletillas, estructura y presupuesto de tokens. Todo en el navegador.">
-  <link rel="canonical" href="https://promptmin.danielbarreiros.es/">
+  <link rel="canonical" href="https://tokemin.danielbarreiros.es/">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="es_ES">
   <meta property="og:site_name" content="Daniel Barreiros">
-  <meta property="og:title" content="Promptmin — comprime prompts, no gastes tokens">
+  <meta property="og:title" content="Tokemin — comprime prompts, no gastes tokens">
   <meta property="og:description" content="Pega un prompt o un contexto largo y recórtalo por capas: muletillas, estructura y presupuesto de tokens. Todo en el navegador.">
-  <meta property="og:url" content="https://promptmin.danielbarreiros.es/">
-  <meta property="og:image" content="https://promptmin.danielbarreiros.es/logo.svg">
+  <meta property="og:url" content="https://tokemin.danielbarreiros.es/">
+  <meta property="og:image" content="https://tokemin.danielbarreiros.es/logo.svg">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Promptmin — comprime prompts, no gastes tokens">
+  <meta name="twitter:title" content="Tokemin — comprime prompts, no gastes tokens">
   <meta name="twitter:description" content="Pega un prompt o un contexto largo y recórtalo por capas. El texto no sale del navegador.">
   <link rel="icon" href="./logo.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./css/theme.css">
   <link rel="stylesheet" href="./css/app.css">
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Promptmin","url":"https://promptmin.danielbarreiros.es/","description":"Pega un prompt o un contexto largo y recórtalo por capas: muletillas, estructura y presupuesto de tokens. Todo en el navegador.","applicationCategory":"DeveloperApplication","operatingSystem":"Web","author":{"@id":"https://danielbarreiros.es/#person"},"isPartOf":{"@id":"https://danielbarreiros.es/#website"},"sameAs":["https://danielbarreiros.es/proyectos/promptmin"]}
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Tokemin","url":"https://tokemin.danielbarreiros.es/","description":"Pega un prompt o un contexto largo y recórtalo por capas: muletillas, estructura y presupuesto de tokens. Todo en el navegador.","applicationCategory":"DeveloperApplication","operatingSystem":"Web","author":{"@id":"https://danielbarreiros.es/#person"},"isPartOf":{"@id":"https://danielbarreiros.es/#website"},"sameAs":["https://danielbarreiros.es/proyectos/tokemin"]}
   </script>
 </head>
 <body>
@@ -43,7 +43,7 @@
           </a>
           <a class="brand" href="./index.html" title="Inicio" aria-label="Inicio">
             <img class="brand-mark" src="./logo.svg" alt="" width="34" height="34" aria-hidden="true">
-            <h1>Promptmin</h1>
+            <h1>Tokemin</h1>
           </a>
         </div>
       </div>
@@ -89,6 +89,20 @@
         </div>
       </div>
 
+      <section class="savings glass" id="savingsPanel">
+        <div class="savings-head">
+          <h2 class="savings-title">Ahorro acumulado</h2>
+          <button type="button" class="button" id="btnClearHistory">Vaciar</button>
+        </div>
+        <div class="savings-totals">
+          <div class="savings-stat">Recortes <strong class="mono" id="histCount">0</strong></div>
+          <div class="savings-stat">Tokens ahorrados <strong class="mono" id="histSaved">0</strong></div>
+          <div class="savings-stat">Media <strong class="mono" id="histAvg">0%</strong></div>
+        </div>
+        <div class="savings-chart" id="savingsChart" role="img" aria-label="Barras de tokens ahorrados"></div>
+        <div class="history" id="historyList"></div>
+      </section>
+
       <div class="diff-view glass" id="diffView">El recorte aparece aquí: tachado lo que sobra, resaltado lo nuevo.</div>
     </main>
 
@@ -98,7 +112,7 @@
           <div>
             <h2 class="dock-kicker">Menos tokens, misma tarea</h2>
             <p class="dock-copy">El recorte corre en este dispositivo. El mensaje corto ahorra poco; el contexto largo es donde merece la pena.</p>
-            <p class="dock-copy">Un proyecto de <a href="https://danielbarreiros.es/">Daniel Barreiros</a> · <a href="https://danielbarreiros.es/proyectos/promptmin">Notas</a></p>
+            <p class="dock-copy">Un proyecto de <a href="https://danielbarreiros.es/">Daniel Barreiros</a> · <a href="https://danielbarreiros.es/proyectos/tokemin">Notas</a></p>
           </div>
 
           <div class="action-row action-row--4" id="modeRow">
@@ -162,8 +176,7 @@
             <button type="button" class="tool-button" data-template="translate">Traducir</button>
             <button type="button" class="button primary" id="btnSave">Guardar</button>
           </div>
-
-          <div class="history" id="historyList"></div>
+          <p class="dock-copy">Copiar o Guardar apunta el recorte al histórico.</p>
 
           <div class="legend">
             <strong>Caché del modelo</strong>
