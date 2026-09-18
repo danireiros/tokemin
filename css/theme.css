@@ -1,0 +1,243 @@
+:root {
+  color-scheme: light;
+  --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "SF Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --page-bg: #eef2f4;
+  --glass-bg: rgba(255, 255, 255, 0.28);
+  --glass-bg-hover: rgba(255, 255, 255, 0.38);
+  --glass-border: rgba(255, 255, 255, 0.85);
+  --glass-highlight: rgba(255, 255, 255, 0.95);
+  --glass-shadow: rgba(0, 0, 0, 0.08);
+  --glass-text: #1d1d1f;
+  --glass-muted: #6b7280;
+  --glass-accent-bg: rgba(6, 182, 212, 0.18);
+  --glass-accent-border: rgba(6, 182, 212, 0.45);
+  --glass-accent-highlight: rgba(165, 243, 252, 0.75);
+  --glass-accent-shadow: rgba(8, 145, 178, 0.25);
+  --glass-reflex-dark: 1;
+  --glass-reflex-light: 1;
+  --glass-saturation: 180%;
+  --switcher-track: rgba(255, 255, 255, 0.38);
+  --switcher-thumb: rgba(255, 255, 255, 0.72);
+  --switcher-icon: #86868b;
+  --switcher-icon-active: #1d1d1f;
+  --blob-1-core: rgb(6, 182, 212);
+  --blob-1-mid: rgb(165, 243, 252);
+  --blob-2-core: rgb(45, 212, 191);
+  --blob-2-mid: rgb(153, 246, 228);
+  --blob-3-core: rgb(14, 165, 233);
+  --blob-3-mid: rgb(186, 230, 253);
+  --blob-4-core: rgb(251, 191, 36);
+  --blob-4-mid: rgb(253, 230, 138);
+  --blob-5-core: rgb(99, 102, 241);
+  --blob-5-mid: rgb(199, 210, 254);
+  --blob-6-core: rgb(20, 184, 166);
+  --blob-6-mid: rgb(94, 234, 212);
+  --accent-from: rgb(6, 182, 212);
+  --accent-mid: rgb(20, 184, 166);
+  --accent-to: rgb(14, 165, 233);
+  --ok: #10b981;
+  --warn: #f59e0b;
+  --danger: #ef4444;
+  --text: var(--glass-text);
+  --muted: var(--glass-muted);
+  --line: var(--glass-border);
+  --shadow: 0 6px 24px var(--glass-shadow), 0 0 40px rgba(255, 255, 255, 0.15);
+  --inner-glow: inset 2px 2px 1px 0 rgba(255, 255, 255, calc(0.6 * var(--glass-reflex-light))),
+    inset -1px -1px 1px 1px rgba(255, 255, 255, calc(0.4 * var(--glass-reflex-light)));
+  --blur: blur(24px) saturate(var(--glass-saturation));
+  --radius: 24px;
+  --font: var(--font-stack);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page-bg: #070b10;
+  --glass-bg: rgba(255, 255, 255, 0.07);
+  --glass-bg-hover: rgba(255, 255, 255, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-highlight: rgba(255, 255, 255, 0.32);
+  --glass-shadow: rgba(0, 0, 0, 0.5);
+  --glass-text: #f5f5f7;
+  --glass-muted: #98989d;
+  --glass-accent-bg: rgba(34, 211, 238, 0.16);
+  --glass-accent-border: rgba(34, 211, 238, 0.45);
+  --glass-accent-highlight: rgba(165, 243, 252, 0.35);
+  --glass-accent-shadow: rgba(8, 145, 178, 0.35);
+  --glass-reflex-dark: 2;
+  --glass-reflex-light: 0.28;
+  --glass-saturation: 150%;
+  --switcher-track: rgba(255, 255, 255, 0.09);
+  --switcher-thumb: rgba(255, 255, 255, 0.16);
+  --switcher-icon: #636366;
+  --switcher-icon-active: #f5f5f7;
+  --text: var(--glass-text);
+  --muted: var(--glass-muted);
+  --line: var(--glass-border);
+  --shadow: 0 6px 28px var(--glass-shadow), 0 0 36px rgba(0, 0, 0, 0.25);
+  --inner-glow: inset 2px 2px 1px 0 rgba(255, 255, 255, 0.14),
+    inset -1px -1px 1px 1px rgba(255, 255, 255, 0.06);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--page-bg);
+  color: var(--text);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  transition: background-color 0.45s ease, color 0.35s ease;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.ambient-canvas {
+  position: fixed;
+  inset: -25%;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ambient-canvas::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.45), rgba(248, 250, 252, 0.35), rgba(255, 255, 255, 0.42)),
+    var(--page-bg);
+}
+
+:root[data-theme="dark"] .ambient-canvas::before {
+  background: linear-gradient(160deg, rgba(7, 11, 16, 0.78), rgba(7, 11, 16, 0.58), rgba(7, 11, 16, 0.72)),
+    var(--page-bg);
+}
+
+.ambient-blob {
+  position: absolute;
+  z-index: 1;
+  border-radius: 50%;
+  filter: blur(85px) saturate(160%);
+  opacity: 0.92;
+  will-change: transform;
+}
+
+.ambient-blob--1 {
+  width: 460px;
+  height: 460px;
+  background: radial-gradient(circle, var(--blob-1-core) 0%, color-mix(in srgb, var(--blob-1-mid) 42%, transparent) 45%, transparent 72%);
+  top: 15%;
+  left: 10%;
+  animation: driftWarm1 32s ease-in-out infinite;
+}
+
+.ambient-blob--2 {
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, var(--blob-2-core) 0%, color-mix(in srgb, var(--blob-2-mid) 38%, transparent) 45%, transparent 72%);
+  top: 50%;
+  left: 55%;
+  animation: driftWarm2 38s ease-in-out infinite;
+  animation-delay: -8s;
+}
+
+.ambient-blob--3 {
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle, var(--blob-3-core) 0%, color-mix(in srgb, var(--blob-3-mid) 42%, transparent) 45%, transparent 72%);
+  top: 25%;
+  left: 70%;
+  animation: driftWarm3 26s ease-in-out infinite;
+  animation-delay: -14s;
+}
+
+.ambient-blob--4 {
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, var(--blob-4-core) 0%, color-mix(in srgb, var(--blob-4-mid) 40%, transparent) 45%, transparent 72%);
+  top: 65%;
+  left: 15%;
+  animation: driftOrange 34s ease-in-out infinite;
+  animation-delay: -6s;
+}
+
+.ambient-blob--5 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, var(--blob-5-core) 0%, color-mix(in srgb, var(--blob-5-mid) 42%, transparent) 45%, transparent 72%);
+  top: 75%;
+  left: 45%;
+  animation: driftWarm4 28s ease-in-out infinite;
+  animation-delay: -12s;
+}
+
+.ambient-blob--6 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, var(--blob-6-core) 0%, color-mix(in srgb, var(--blob-6-mid) 45%, transparent) 45%, transparent 72%);
+  top: 40%;
+  left: 30%;
+  animation: driftWarm5 30s ease-in-out infinite;
+  animation-delay: -18s;
+}
+
+@keyframes driftWarm1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(35vw, 20vh) scale(1.1); }
+  50% { transform: translate(15vw, 45vh) scale(0.92); }
+  75% { transform: translate(-25vw, 25vh) scale(1.08); }
+}
+
+@keyframes driftWarm2 {
+  0%, 100% { transform: translate(0, 0) scale(1.05); }
+  25% { transform: translate(-30vw, -15vh) scale(0.95); }
+  50% { transform: translate(-45vw, 20vh) scale(1.12); }
+  75% { transform: translate(-10vw, 35vh) scale(1); }
+}
+
+@keyframes driftWarm3 {
+  0%, 100% { transform: translate(0, 0) scale(0.95); }
+  33% { transform: translate(-35vw, 30vh) scale(1.1); }
+  66% { transform: translate(20vw, -25vh) scale(1.05); }
+}
+
+@keyframes driftWarm4 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  20% { transform: translate(40vw, -30vh) scale(1.08); }
+  45% { transform: translate(25vw, -10vh) scale(0.9); }
+  70% { transform: translate(-15vw, -35vh) scale(1.1); }
+}
+
+@keyframes driftOrange {
+  0%, 100% { transform: translate(0, 0) scale(1.02); }
+  30% { transform: translate(-40vw, -20vh) scale(0.94); }
+  60% { transform: translate(-20vw, -40vh) scale(1.1); }
+}
+
+@keyframes driftWarm5 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(30vw, 35vh) scale(1.12); }
+  50% { transform: translate(-25vw, 15vh) scale(0.88); }
+  75% { transform: translate(10vw, -30vh) scale(1.06); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-blob {
+    animation: none !important;
+  }
+}

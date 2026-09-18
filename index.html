@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Promptmin — comprime prompts, no gastes tokens</title>
+  <meta name="description" content="Pega un prompt o un contexto largo y recórtalo por capas: muletillas, estructura y presupuesto de tokens. Todo en el navegador.">
+  <link rel="canonical" href="https://promptmin.danielbarreiros.es/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_ES">
+  <meta property="og:site_name" content="Daniel Barreiros">
+  <meta property="og:title" content="Promptmin — comprime prompts, no gastes tokens">
+  <meta property="og:description" content="Pega un prompt o un contexto largo y recórtalo por capas: muletillas, estructura y presupuesto de tokens. Todo en el navegador.">
+  <meta property="og:url" content="https://promptmin.danielbarreiros.es/">
+  <meta property="og:image" content="https://promptmin.danielbarreiros.es/logo.svg">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Promptmin — comprime prompts, no gastes tokens">
+  <meta name="twitter:description" content="Pega un prompt o un contexto largo y recórtalo por capas. El texto no sale del navegador.">
+  <link rel="icon" href="./logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./css/theme.css">
+  <link rel="stylesheet" href="./css/app.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Promptmin","url":"https://promptmin.danielbarreiros.es/","description":"Pega un prompt o un contexto largo y recórtalo por capas: muletillas, estructura y presupuesto de tokens. Todo en el navegador.","applicationCategory":"DeveloperApplication","operatingSystem":"Web","author":{"@id":"https://danielbarreiros.es/#person"},"isPartOf":{"@id":"https://danielbarreiros.es/#website"},"sameAs":["https://danielbarreiros.es/proyectos/promptmin"]}
+  </script>
+</head>
+<body>
+  <div class="ambient-canvas" aria-hidden="true">
+    <span class="ambient-blob ambient-blob--1"></span>
+    <span class="ambient-blob ambient-blob--2"></span>
+    <span class="ambient-blob ambient-blob--3"></span>
+    <span class="ambient-blob ambient-blob--4"></span>
+    <span class="ambient-blob ambient-blob--5"></span>
+    <span class="ambient-blob ambient-blob--6"></span>
+  </div>
+
+  <div class="app-shell">
+    <header class="topbar glass">
+      <div class="topbar-start">
+        <div class="topbar-identity">
+          <a class="button icon-button icon-button--brand" href="https://danielbarreiros.es" title="DBP" aria-label="Ir a danielbarreiros.es">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20a1.5 1.5 0 0 1-1.5 1.5h-5V15h-3v6.5h-5A1.5 1.5 0 0 1 4 20z"/></svg>
+            <span>DBP</span>
+          </a>
+          <a class="brand" href="./index.html" title="Inicio" aria-label="Inicio">
+            <img class="brand-mark" src="./logo.svg" alt="" width="34" height="34" aria-hidden="true">
+            <h1>Promptmin</h1>
+          </a>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <fieldset class="theme-switcher" id="themeSwitcher">
+          <legend class="sr-only">Tema</legend>
+          <label class="theme-switcher__option" title="Modo claro">
+            <input class="theme-switcher__input" type="radio" name="theme" value="light" data-option="1">
+            <svg class="theme-switcher__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/></svg>
+          </label>
+          <label class="theme-switcher__option" title="Modo oscuro">
+            <input class="theme-switcher__input" type="radio" name="theme" value="dark" data-option="2" checked>
+            <svg class="theme-switcher__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 14.5A8.5 8.5 0 1 1 9.5 3 7 7 0 0 0 21 14.5z"/></svg>
+          </label>
+        </fieldset>
+      </div>
+    </header>
+
+    <main class="workspace glass">
+      <div class="hud glass" aria-live="polite">
+        <div class="hud-row">Entrada: <strong class="mono" id="tokensIn">0</strong></div>
+        <div class="hud-row">Salida: <strong class="mono" id="tokensOut">0</strong></div>
+        <div class="hud-row">Ahorro: <strong class="mono" id="tokensSaved">0</strong></div>
+        <div class="hud-row">€ / 1000 llamadas: <strong class="mono" id="costSaved">0</strong></div>
+        <div class="hud-row" id="countSourceRow">Conteo: <strong id="countSource">heurístico</strong></div>
+        <div class="hud-row is-warn" id="warningRow" hidden><strong id="warningText"></strong></div>
+      </div>
+
+      <div class="editors">
+        <div class="editor">
+          <div class="editor-label">
+            <label for="inputText">Original</label>
+            <span class="mono" id="inputChars">0</span>
+          </div>
+          <textarea id="inputText" placeholder="Pega el prompt, el system o el contexto…" spellcheck="false"></textarea>
+        </div>
+        <div class="editor">
+          <div class="editor-label">
+            <label for="outputText">Comprimido</label>
+            <button type="button" class="button" id="btnCopy">Copiar</button>
+          </div>
+          <textarea id="outputText" spellcheck="false"></textarea>
+        </div>
+      </div>
+
+      <div class="diff-view glass" id="diffView">El recorte aparece aquí: tachado lo que sobra, resaltado lo nuevo.</div>
+    </main>
+
+    <aside class="dock">
+      <div class="dock-panel glass">
+        <div class="dock-scroll">
+          <div>
+            <h2 class="dock-kicker">Menos tokens, misma tarea</h2>
+            <p class="dock-copy">El recorte corre en este dispositivo. El mensaje corto ahorra poco; el contexto largo es donde merece la pena.</p>
+            <p class="dock-copy">Un proyecto de <a href="https://danielbarreiros.es/">Daniel Barreiros</a> · <a href="https://danielbarreiros.es/proyectos/promptmin">Notas</a></p>
+          </div>
+
+          <div class="action-row action-row--4" id="modeRow">
+            <button type="button" class="tool-button is-active" data-mode="message">Mensaje</button>
+            <button type="button" class="tool-button" data-mode="system">System</button>
+            <button type="button" class="tool-button" data-mode="context">Contexto</button>
+            <button type="button" class="tool-button" data-mode="chat">Chat</button>
+          </div>
+
+          <div class="control">
+            <div class="lab-label">
+              <label for="aggressiveness">Agresividad</label>
+              <span class="lab-value" id="aggressivenessValue">media</span>
+            </div>
+            <input id="aggressiveness" type="range" min="0" max="3" step="1" value="1">
+          </div>
+
+          <div class="control" id="budgetControl">
+            <div class="lab-label">
+              <label for="budgetTokens">Presupuesto</label>
+              <span class="lab-value" id="budgetValue">800</span>
+            </div>
+            <input id="budgetTokens" type="range" min="80" max="4000" step="20" value="800">
+          </div>
+
+          <div class="field" id="queryField">
+            <label class="sr-only" for="queryText">Pregunta para el contexto</label>
+            <input id="queryText" type="text" placeholder="Pregunta (modo contexto)">
+          </div>
+
+          <div class="field">
+            <label class="sr-only" for="modelSelect">Modelo para el precio</label>
+            <select id="modelSelect">
+              <option value="gpt-4o">GPT-4o — precio de referencia</option>
+              <option value="gpt-4.1">GPT-4.1 — precio de referencia</option>
+              <option value="claude-sonnet">Claude Sonnet — aprox.</option>
+              <option value="gemini-flash">Gemini Flash — aprox.</option>
+            </select>
+          </div>
+
+          <label class="check">
+            <span>Proteger código</span>
+            <input type="checkbox" id="chkProtect" checked>
+          </label>
+          <label class="check">
+            <span>Respuesta corta</span>
+            <input type="checkbox" id="chkShort">
+          </label>
+          <label class="check">
+            <span>Inglés denso</span>
+            <input type="checkbox" id="chkDense">
+          </label>
+          <label class="check">
+            <span>Quitar comentarios de código</span>
+            <input type="checkbox" id="chkComments">
+          </label>
+
+          <div class="action-row">
+            <button type="button" class="tool-button" data-template="review">Review</button>
+            <button type="button" class="tool-button" data-template="summarize">Resumir</button>
+            <button type="button" class="tool-button" data-template="translate">Traducir</button>
+            <button type="button" class="button primary" id="btnSave">Guardar</button>
+          </div>
+
+          <div class="history" id="historyList"></div>
+
+          <div class="legend">
+            <strong>Caché del modelo</strong>
+            <p>System estable arriba, datos variables abajo. El conteo o200k/cl100k es proxy OpenAI cuando carga el encoder.</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
